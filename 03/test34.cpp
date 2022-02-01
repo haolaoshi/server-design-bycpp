@@ -69,7 +69,8 @@ int main(int argc,char** argv)
   epoll_event  listen_fd_event;
   listen_fd_event.data.fd = listenfd;
   listen_fd_event.events = EPOLLIN;
-  //listen_fd_event.events |= EPOLLET; //ET mode
+  std::cout<<"EPOLLET"<<std::endl;
+  listen_fd_event.events |= EPOLLET; //ET mode
 
 
   if(epoll_ctl(epollfd,EPOLL_CTL_ADD, listenfd, &listen_fd_event) == -1)
@@ -102,6 +103,9 @@ int main(int argc,char** argv)
       {
         if(epoll_events[i].data.fd == listenfd)
         {
+
+          std::cout<<"this is a new socket connection"<<std::endl;
+
           struct sockaddr_in clientaddr;
 
 //          clientaddr.sin_family = AF_INET;
@@ -124,7 +128,8 @@ int main(int argc,char** argv)
               epoll_event client_fd_event;
               client_fd_event.data.fd = clientfd;
               client_fd_event.events = EPOLLIN;
-              //client_fd_event.events |= EPOLLET;
+              std::cout<<"EPOLLET"<<std::endl;
+              client_fd_event.events |= EPOLLET;
               if(epoll_ctl(epollfd,EPOLL_CTL_ADD, clientfd, &client_fd_event) != -1)
               {
                 std::cout <<"new client accepted, fd:" << clientfd<<std::endl;
@@ -139,7 +144,7 @@ int main(int argc,char** argv)
         }
         else
         {
-          std::cout<<" client fd : " << epoll_events[i].data.fd <<" recv data" << std::endl;
+          std::cout<<" client fd : ["<<i<<"]" << epoll_events[i].data.fd <<" recv data" << std::endl;
           char ch;
           int m = recv(epoll_events[i].data.fd , &ch, 1,0);
           if(m == 0)
